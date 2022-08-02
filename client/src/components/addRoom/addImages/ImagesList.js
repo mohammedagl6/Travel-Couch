@@ -11,12 +11,14 @@ import deleteFile from '../../../firebase/deleteFile';
 
 const ImagesList = () => {
   const {
-    state: { images, currentUser },
+    state: { images, currentUser, updatedRoom },
     dispatch,
   } = useValue();
 
   const handleDelete = async (image) => {
     dispatch({ type: 'DELETE_IMAGE', payload: image });
+    if (updatedRoom)
+      return dispatch({ type: 'UPDATE_DELETED_IMAGES', payload: [image] });
     const imageName = image?.split(`${currentUser?.id}%2F`)[1]?.split('?')[0];
     try {
       await deleteFile(`rooms/${currentUser?.id}/${imageName}`);
@@ -38,12 +40,12 @@ const ImagesList = () => {
         <ImageListItem key={index} cols={1} rows={1}>
           <img
             src={image}
-            alt="rooms"
-            loading="lazy"
+            alt='rooms'
+            loading='lazy'
             style={{ height: '100%' }}
           />
           <ImageListItemBar
-            position="top"
+            position='top'
             sx={{
               background:
                 'linear-gradient(to bottom, rgba(0,0,0,0.7)0%, rgba(0,0,0,0.3)70%, rgba(0,0,0,0)100%)',

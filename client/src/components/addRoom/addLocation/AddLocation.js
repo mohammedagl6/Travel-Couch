@@ -13,21 +13,22 @@ const AddLocation = () => {
   const {
     state: {
       location: { lng, lat },
+      currentUser,
     },
     dispatch,
   } = useValue();
   const mapRef = useRef();
 
   useEffect(() => {
-    if (!lng && !lat) {
+    const storedLocation = JSON.parse(
+      localStorage.getItem(currentUser.id)
+    )?.location;
+    if (!lng && !lat && !storedLocation?.lng && !storedLocation?.lat) {
       fetch('https://ipapi.co/json')
         .then((response) => {
           return response.json();
         })
         .then((data) => {
-          mapRef.current.flyTo({
-            center: [data.longitude, data.latitude],
-          });
           dispatch({
             type: 'UPDATE_LOCATION',
             payload: { lng: data.longitude, lat: data.latitude },
@@ -35,6 +36,13 @@ const AddLocation = () => {
         });
     }
   }, []);
+  useEffect(() => {
+    if ((lng || lat) && mapRef.current) {
+      mapRef.current.flyTo({
+        center: [lng, lat],
+      });
+    }
+  }, [lng, lat]);
   return (
     <Box
       sx={{
@@ -50,7 +58,7 @@ const AddLocation = () => {
           latitude: lat,
           zoom: 8,
         }}
-        mapStyle="mapbox://styles/mapbox/streets-v11"
+        mapStyle='mapbox://styles/mapbox/streets-v11'
       >
         <Marker
           latitude={lat}
@@ -63,9 +71,9 @@ const AddLocation = () => {
             })
           }
         />
-        <NavigationControl position="bottom-right" />
+        <NavigationControl position='bottom-right' />
         <GeolocateControl
-          position="top-left"
+          position='top-left'
           trackUserLocation
           onGeolocate={(e) =>
             dispatch({
