@@ -32,6 +32,8 @@ import Messages from './messages/Messages';
 import Requests from './requests/Requests';
 import Rooms from './rooms/Rooms';
 import Users from './users/Users';
+import isAdmin from './utils/isAdmin';
+import useCheckToken from '../../hooks/useCheckToken';
 
 const drawerWidth = 240;
 
@@ -83,6 +85,7 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 const SideList = ({ open, setOpen }) => {
+  useCheckToken();
   const {
     state: {
       currentUser,
@@ -100,18 +103,23 @@ const SideList = ({ open, setOpen }) => {
 
   const list = useMemo(
     () => [
-      {
-        title: 'Main',
-        icon: <Dashboard />,
-        link: '',
-        component: <Main {...{ setSelectedLink, link: '' }} />,
-      },
-      {
-        title: 'Users',
-        icon: <PeopleAlt />,
-        link: 'users',
-        component: <Users {...{ setSelectedLink, link: 'users' }} />,
-      },
+      ...(isAdmin(currentUser)
+        ? [
+            {
+              title: 'Main',
+              icon: <Dashboard />,
+              link: '',
+              component: <Main {...{ setSelectedLink, link: '' }} />,
+            },
+            {
+              title: 'Users',
+              icon: <PeopleAlt />,
+              link: 'users',
+              component: <Users {...{ setSelectedLink, link: 'users' }} />,
+            },
+          ]
+        : []),
+
       {
         title: 'Rooms',
         icon: <KingBed />,
@@ -131,7 +139,7 @@ const SideList = ({ open, setOpen }) => {
         component: <Messages {...{ setSelectedLink, link: 'messages' }} />,
       },
     ],
-    []
+    [currentUser]
   );
 
   const navigate = useNavigate();
@@ -147,11 +155,10 @@ const SideList = ({ open, setOpen }) => {
       currentUser.id
     );
     logout(dispatch);
-    navigate('/');
   };
   return (
     <>
-      <Drawer variant="permanent" open={open}>
+      <Drawer variant='permanent' open={open}>
         <DrawerHeader>
           <IconButton onClick={() => setOpen(false)}>
             <ChevronLeft />
@@ -198,23 +205,33 @@ const SideList = ({ open, setOpen }) => {
         </Box>
         <Box sx={{ textAlign: 'center' }}>
           {open && <Typography>{currentUser?.name}</Typography>}
-          <Typography variant="body2">{currentUser?.role || 'role'}</Typography>
+          <Typography variant='body2'>{currentUser?.role || 'role'}</Typography>
           {open && (
-            <Typography variant="body2">{currentUser?.email}</Typography>
+            <Typography variant='body2'>{currentUser?.email}</Typography>
           )}
-          <Tooltip title="Logout" sx={{ mt: 1 }}>
+          <Tooltip title='Logout' sx={{ mt: 1 }}>
             <IconButton onClick={handleLogout}>
               <Logout />
             </IconButton>
           </Tooltip>
         </Box>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component='main' sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
         <Routes>
           {list.map((item) => (
             <Route key={item.title} path={item.link} element={item.component} />
           ))}
+          <Route
+            path='*'
+            element={
+              isAdmin(currentUser) ? (
+                <Main {...{ setSelectedLink, link: '' }} />
+              ) : (
+                <Rooms {...{ setSelectedLink, link: 'rooms' }} />
+              )
+            }
+          />
         </Routes>
       </Box>
     </>

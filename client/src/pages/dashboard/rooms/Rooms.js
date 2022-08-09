@@ -6,10 +6,11 @@ import { getRooms } from '../../../actions/room';
 import moment from 'moment';
 import { grey } from '@mui/material/colors';
 import RoomsActions from './RoomsActions';
+import isAdmin from '../utils/isAdmin';
 
 const Rooms = ({ setSelectedLink, link }) => {
   const {
-    state: { rooms },
+    state: { rooms, currentUser },
     dispatch,
   } = useValue();
 
@@ -40,16 +41,9 @@ const Rooms = ({ setSelectedLink, link }) => {
       },
       { field: 'title', headerName: 'Title', width: 170 },
       { field: 'description', headerName: 'Description', width: 200 },
-      {
-        field: 'lng',
-        headerName: 'Longitude',
-        width: 110,
-      },
-      {
-        field: 'lat',
-        headerName: 'Latitude',
-        width: 110,
-      },
+      { field: 'lng', headerName: 'Longitude', width: 110 },
+      { field: 'lat', headerName: 'Latitude', width: 110 },
+
       {
         field: 'uName',
         headerName: 'Added by',
@@ -95,7 +89,11 @@ const Rooms = ({ setSelectedLink, link }) => {
       </Typography>
       <DataGrid
         columns={columns}
-        rows={rooms}
+        rows={
+          isAdmin(currentUser)
+            ? rooms
+            : rooms.filter((room) => room.uid === currentUser.id)
+        }
         getRowId={(row) => row._id}
         rowsPerPageOptions={[5, 10, 20]}
         pageSize={pageSize}

@@ -1,38 +1,48 @@
-import { Box, CircularProgress, Fab } from "@mui/material";
-import { useEffect, useState } from "react";
-import { Check, Save } from "@mui/icons-material";
-import { green } from "@mui/material/colors";
-import { useValue } from "../../../context/ContextProvider";
-import { updateStatus } from "../../../actions/user";
+import { Box, CircularProgress, Fab } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Check, Save } from '@mui/icons-material';
+import { green } from '@mui/material/colors';
+import { getUsers, updateStatus } from '../../../actions/user';
+import { useValue } from '../../../context/ContextProvider';
 
 const UsersActions = ({ params, rowId, setRowId }) => {
-  const { dispatch } = useValue();
+  const {
+    dispatch,
+    state: { currentUser, users },
+  } = useValue();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const handleSubmit = async () => {
     setLoading(true);
-    setTimeout(async () => {
-      const { role, active, _id } = params.row;
-      const result = await updateStatus({ role, active }, _id, dispatch);
-      if (result) {
-        setSuccess(true);
-        setRowId(null);
-      }
-      setLoading(false);
-    }, 1500);
+
+    const { role, active, _id } = params.row;
+    const result = await updateStatus(
+      { role, active },
+      _id,
+      dispatch,
+      currentUser
+    );
+    if (result) {
+      setSuccess(true);
+      setRowId(null);
+      const user = users.find((user) => user._id === _id);
+      user.role = role;
+      user.active = active;
+      // getUsers(dispatch, currentUser);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
-    if (rowId === params.id && success) {
-      setSuccess(false);
-    }
+    if (rowId === params.id && success) setSuccess(false);
   }, [rowId]);
+
   return (
     <Box
       sx={{
         m: 1,
-        position: "relative",
+        position: 'relative',
       }}
     >
       {success ? (
@@ -42,7 +52,7 @@ const UsersActions = ({ params, rowId, setRowId }) => {
             width: 40,
             height: 40,
             bgcolor: green[500],
-            "&:hover": { bgcolor: green[700] },
+            '&:hover': { bgcolor: green[700] },
           }}
         >
           <Check />
@@ -65,7 +75,7 @@ const UsersActions = ({ params, rowId, setRowId }) => {
           size={52}
           sx={{
             color: green[500],
-            position: "absolute",
+            position: 'absolute',
             top: -6,
             left: -6,
             zIndex: 1,
