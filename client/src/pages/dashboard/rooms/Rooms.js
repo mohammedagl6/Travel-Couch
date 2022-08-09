@@ -8,6 +8,8 @@ import { grey } from '@mui/material/colors';
 import RoomsActions from './RoomsActions';
 import isAdmin from '../utils/isAdmin';
 
+const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'EUR'})
+
 const Rooms = ({ setSelectedLink, link }) => {
   const {
     state: { rooms, currentUser },
@@ -37,7 +39,7 @@ const Rooms = ({ setSelectedLink, link }) => {
         field: 'price',
         headerName: 'Cost',
         width: 70,
-        renderCell: (params) => '$' + params.row.price,
+        valueFormatter: ({value}) => currencyFormatter.format(value)
       },
       { field: 'title', headerName: 'Title', width: 170 },
       { field: 'description', headerName: 'Description', width: 200 },
@@ -58,8 +60,8 @@ const Rooms = ({ setSelectedLink, link }) => {
         field: 'createdAt',
         headerName: 'Created At',
         width: 200,
-        renderCell: (params) =>
-          moment(params.row.createdAt).format('YYYY-MM-DD HH:MM:SS'),
+        type:'dateTime',
+        valueGetter: ({value}) => value && new Date(value)
       },
       { field: '_id', hide: true },
       {

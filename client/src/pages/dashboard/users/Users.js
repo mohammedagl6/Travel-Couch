@@ -52,8 +52,8 @@ const Users = ({ setSelectedLink, link }) => {
         field: 'createdAt',
         headerName: 'Created At',
         width: 200,
-        renderCell: (params) =>
-          moment(params.row.createdAt).format('YYYY-MM-DD HH:MM:SS'),
+        type: 'dateTime',
+        valueGetter: ({ value }) => value && new Date(value),
       },
       { field: '_id', headerName: 'Id', width: 220 },
       {
@@ -76,8 +76,8 @@ const Users = ({ setSelectedLink, link }) => {
       }}
     >
       <Typography
-        variant="h3"
-        component="h3"
+        variant='h3'
+        component='h3'
         sx={{ textAlign: 'center', mt: 3, mb: 3 }}
       >
         Manage Users
