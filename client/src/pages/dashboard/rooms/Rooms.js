@@ -3,12 +3,14 @@ import { Avatar, Box, Tooltip, Typography } from '@mui/material';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { useValue } from '../../../context/ContextProvider';
 import { getRooms } from '../../../actions/room';
-import moment from 'moment';
 import { grey } from '@mui/material/colors';
 import RoomsActions from './RoomsActions';
 import isAdmin from '../utils/isAdmin';
 
-const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'EUR'})
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'EUR',
+});
 
 const Rooms = ({ setSelectedLink, link }) => {
   const {
@@ -30,7 +32,7 @@ const Rooms = ({ setSelectedLink, link }) => {
         headerName: 'Photo',
         width: 70,
         renderCell: (params) => (
-          <Avatar src={params.row.images[0]} variant="rounded" />
+          <Avatar src={params.row.images[0]} variant='rounded' />
         ),
         sortable: false,
         filterable: false,
@@ -39,7 +41,7 @@ const Rooms = ({ setSelectedLink, link }) => {
         field: 'price',
         headerName: 'Cost',
         width: 70,
-        valueFormatter: ({value}) => currencyFormatter.format(value)
+        valueFormatter: ({ value }) => currencyFormatter.format(value),
       },
       { field: 'title', headerName: 'Title', width: 170 },
       { field: 'description', headerName: 'Description', width: 200 },
@@ -60,8 +62,8 @@ const Rooms = ({ setSelectedLink, link }) => {
         field: 'createdAt',
         headerName: 'Created At',
         width: 200,
-        type:'dateTime',
-        valueGetter: ({value}) => value && new Date(value)
+        type: 'dateTime',
+        valueGetter: ({ value }) => value && new Date(value),
       },
       { field: '_id', hide: true },
       {
@@ -83,8 +85,8 @@ const Rooms = ({ setSelectedLink, link }) => {
       }}
     >
       <Typography
-        variant="h3"
-        component="h3"
+        variant='h3'
+        component='h3'
         sx={{ textAlign: 'center', mt: 3, mb: 3 }}
       >
         Manage Rooms

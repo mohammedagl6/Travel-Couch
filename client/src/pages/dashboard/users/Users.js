@@ -52,8 +52,8 @@ const Users = ({ setSelectedLink, link }) => {
         field: 'createdAt',
         headerName: 'Created At',
         width: 200,
-        type: 'dateTime',
-        valueGetter: ({ value }) => value && new Date(value),
+        renderCell: (params) =>
+          moment(params.row.createdAt).format('YYYY-MM-DD HH:MM:SS'),
       },
       { field: '_id', headerName: 'Id', width: 220 },
       {
